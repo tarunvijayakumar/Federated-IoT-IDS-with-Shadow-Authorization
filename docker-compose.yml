@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_DB: thingsboard
+      POSTGRES_USER: thingsboard
+      POSTGRES_PASSWORD: thingsboard
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  tb:
+    image: thingsboard/tb-postgres:4.2.1
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/thingsboard"
+    ports:
+      - "9090:9090"
+      - "1883:1883"
+
+  fl-server:
+    build: ./fl-server
+    depends_on:
+      - tb
+    ports:
+      - "8080:8080"
+    # remove if you don't need web UI access externally
+    # expose:
+    #   - 8080
+
+  fl-client-1:
+    build: ./fl-client
+    depends_on:
+      - fl-server
+      - tb
+    environment:
+      - SERVER_URL=fl-server:8080
+      - CLIENT_ID=fl-client-1
+      - TB_HOST=tb
+      - TB_TOKEN=c9Yr41kIBBXZfQGlp0GW  # copy from ThingsBoard UI
+
+  fl-client-2:
+    build: ./fl-client
+    depends_on:
+      - fl-server
+      - tb
+    environment:
+      - SERVER_URL=fl-server:8080
+      - CLIENT_ID=fl-client-2
+      - TB_HOST=tb
+      - TB_TOKEN=tqpNR0kQLF8BUQInbxDU  # copy from ThingsBoard UI
+
+  iot-ids:  # Edge IDS
+    image: iot-ids
+    depends_on:
+      - tb
+    volumes:
+      - ../edge-device/model.pt:/app/model.pt
+    networks:
+      - default
+
+volumes:
+  postgres_data:
+    driver: local
+
+
+networks:
+  default:
+    driver: bridge
