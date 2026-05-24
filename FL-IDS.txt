@@ -1,0 +1,160 @@
+Privacy-Preserving IoT Intrusion Detection with Shadow Authorization
+
+A lightweight edge-based federated learning framework for detecting IoT intrusions while preserving data privacy and protecting shared-device authorization. The system trains intrusion detection models locally on distributed edge nodes and shares only model updates, not raw telemetry, while integrating a shadow proxy layer for secure credential handling.
+
+Features
+Federated learning-based intrusion detection using Flower (FLWR).
+
+Hybrid CNN-LSTM model for IoT anomaly detection.
+
+No raw data sharing between edge clients and central server.
+
+Shadow authorization proxy for protecting credentials and device access flows.
+
+Dockerized deployment for server, clients, and edge IDS components.
+
+Real-time telemetry and alert monitoring using MQTT and ThingsBoard.
+
+Feature selection and optimization for lightweight edge inference.
+
+Designed for smart city, healthcare, and industrial IoT environments.
+
+Input Format
+The framework accepts IoT traffic, telemetry, and authorization-related data prepared as client-specific datasets for federated training. These datasets can include network flow features, MQTT traffic behavior, protocol activity, packet statistics, and attack labels distributed across multiple clients in non-IID form.
+
+Example input sources:
+
+text
+client1.csv
+client2.csv
+client3.csv
+mqtt_logs.csv
+bot_iot_features.csv
+ton_iot_features.csv
+The system supports distributed client datasets so each edge node can train locally while participating in global model aggregation.
+
+How to Run
+Install the required environment and dependencies:
+
+bash
+pip install torch flwr pandas numpy
+Ensure Docker and Docker Compose are installed for containerized deployment.
+
+Start the federated learning environment:
+
+bash
+docker-compose up --build
+The workflow generally includes:
+
+Starting the Flower server container
+
+Launching federated client containers
+
+Training the global CNN-LSTM model over multiple rounds
+
+Aggregating local weights using FedAvg
+
+Saving the final global_model.pt
+
+Deploying the model to the edge IDS pipeline
+
+Streaming inference alerts to ThingsBoard dashboards.
+
+Output Files
+The framework produces outputs such as:
+
+Global trained model file
+
+Local client training metrics
+
+Federated aggregation logs
+
+Intrusion detection predictions
+
+Edge inference alerts
+
+Dashboard-ready telemetry streams
+
+Authorization and proxy event traces[ciae? no]
+
+More practically, expected generated artifacts include files like:
+
+text
+global_model.pt
+client_metrics.json
+training_logs.txt
+edge_alerts.log
+proxy_events.log
+These outputs support evaluation, deployment, and live security monitoring across distributed IoT nodes.
+
+Behind the Scenes
+Core federated training uses Flower with FedAvg to coordinate model updates from multiple edge clients into a single global model. The deep learning engine uses a CNN-LSTM hybrid architecture in PyTorch to capture both spatial and temporal intrusion patterns from IoT traffic data.
+
+Important system characteristics include:
+
+Local training on edge/client datasets
+
+Central aggregation without raw data collection
+
+Deployment-ready Docker containers
+
+Low-latency inference around 32 ms
+
+Convergence in about 10 federated rounds
+
+Privacy-preserving collaboration across heterogeneous IoT devices[‌cite:1]
+
+Feature Engineering Support
+This framework includes feature ranking and optimization to reduce communication and computational overhead. Chi-Squared ranking is used to shortlist important features, followed by ChOA-based optimization to select a compact final feature set for efficient detection performance on resource-constrained devices.
+
+Examples of selected features include:
+
+interarrival_time
+
+mqtt_qos
+
+protocol_state
+
+byte_ratio
+
+packet_entropy
+
+flow_duration
+
+Shadow Authorization Protection
+A dedicated shadow mapping and proxy module protects device credentials during access and sharing operations. Instead of exposing direct authorization details to users or intermediate entities, the proxy validates, sanitizes, and forwards secure requests while supporting revocation-aware protection.
+
+This strengthens the framework beyond traditional IDS models because it addresses both intrusion detection and credential leakage risks in the same IoT security pipeline.
+
+Use Cases
+Smart city IoT threat detection
+
+Healthcare device security monitoring
+
+Industrial IoT anomaly detection
+
+Privacy-preserving multi-device environments
+
+Edge-native intrusion detection for distributed systems[‌cite:1]
+
+Performance Highlights
+98.4% accuracy on Bot-IoT
+
+97.8% accuracy on MQTT-set
+
+98.1% accuracy on TON_IoT
+
+97%+ F1-score across major evaluations
+
+0.8% false positive rate in optimized setup
+
+42% bandwidth savings
+
+22% energy efficiency improvement[‌cite:1]
+
+Author
+Tarun V
+Cybersecurity Student and Research Project Developer.
+
+Disclaimer
+This project is intended for academic research, authorized testing, and educational cybersecurity use. It should be deployed only in approved environments and not for unauthorized monitoring or security testing.
